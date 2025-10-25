@@ -1,0 +1,85 @@
+# Copyright © 2025 Monster Spawned Studios
+# https://monsterspawned.studio/
+# All rights reserved.
+
+name: Build iOS IPA
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to build (e.g., 1.0.0)"
+        required: true
+        default: "1.0.0"
+
+jobs:
+  build-ipa:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.24.0"
+          channel: "stable"
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Verify signing
+        run: |
+          if [ -z "${{ secrets.CERTIFICATE_BASE64 }}" ] || [ -z "${{ secrets.CERTIFICATE_PASSWORD }}" ] || [ -z "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" ]; then
+            echo "Error: Required secrets not set. Please configure:"
+            echo "- CERTIFICATE_BASE64: Base64 encoded .p12 certificate"
+            echo "- CERTIFICATE_PASSWORD: Password for the certificate"
+            echo "- PROVISIONING_PROFILE_BASE64: Base64 encoded .mobileprovision file"
+            echo ""
+            echo "See docs/SETUP.md for detailed instructions."
+            exit 1
+          fi
+
+      - name: Setup certificates
+        run: |
+          # Create keychain
+          security create-keychain -p "" build.keychain
+          security default-keychain -s build.keychain
+          security unlock-keychain -p "" build.keychain
+          security set-keychain-settings -t 3600 -u build.keychain
+
+          # Import certificate
+          echo "${{ secrets.CERTIFICATE_BASE64 }}" | base64 --decode > certificate.p12
+          security import certificate.p12 -k build.keychain -P "${{ secrets.CERTIFICATE_PASSWORD }}" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "" build.keychain
+
+          # Import provisioning profile
+          echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > profile.mobileprovision
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/
+
+          # Clean up
+          rm certificate.p12 profile.mobileprovision
+
+      - name: Build IPA
+        run: |
+          flutter build ipa --release --no-codesign
+          cd build/ios/ipa
+          xcodebuild -exportArchive -archivePath Runner.xcarchive -exportPath . -exportOptionsPlist ExportOptions.plist
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-ipa
+          path: build/ios/ipa/*.ipa
+          retention-days: 30
+
+      - name: Clean up keychain
+        if: always()
+        run: |
+          security delete-keychain build.keychain

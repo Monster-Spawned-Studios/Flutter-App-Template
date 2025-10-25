@@ -1,0 +1,18 @@
+# Copyright © 2025 Monster Spawned Studios
+# https://monsterspawned.studio/
+# All rights reserved.
+
+pre-commit:
+  commands:
+    format:
+      run: dart format --set-exit-if-changed .
+      glob: "*.dart"
+    analyze:
+      run: flutter analyze
+      glob: "*.dart"
+    git-secrets:
+      run: git secrets --scan
+      fail_text: "Git secrets scan failed. Please remove any sensitive information before committing."
+    add-copyright:
+      run: dart tools/add_copyright.dart
+      glob: "*.dart"

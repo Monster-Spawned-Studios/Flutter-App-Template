@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright © 2025 Monster Spawned Studios -->
+<!-- https://monsterspawned.studio/ -->
+<!-- All rights reserved. -->
+
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- Exclude sensitive data from cloud backup -->
+        <exclude domain="sharedpref" path="auth_prefs.xml" />
+        <exclude domain="sharedpref" path="biometric_prefs.xml" />
+        <exclude domain="database" path="secure.db" />
+    </cloud-backup>
+    <device-transfer>
+        <!-- Exclude sensitive data from device transfer -->
+        <exclude domain="sharedpref" path="auth_prefs.xml" />
+        <exclude domain="sharedpref" path="biometric_prefs.xml" />
+        <exclude domain="database" path="secure.db" />
+    </device-transfer>
+</data-extraction-rules>

@@ -1,0 +1,42 @@
+name: General PR
+about: A general pull request
+title: "[PR]: <CHANGE-THIS-TO-PR-TITLE>"
+labels: ["general", "needs-review"]
+assignees: ["themoddersden"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to submit a pull request! Please provide as much detail as possible to help us review your changes.
+  - type: textarea
+    id: description
+    attributes:
+      label: PR Description
+      description: Describe the changes you made in this pull request.
+      placeholder: "Describe the changes you made in this pull request."
+    validations:
+      required: true
+  - type: input
+    id: changes
+    attributes:
+      label: Changes
+      description: List the changes you made in this pull request.
+      placeholder: "List the changes you made in this pull request."
+    validations:
+      required: true
+  - type: input
+    id: related_issues
+    attributes:
+      label: Related Issues
+      description: List any related issues or pull requests.
+      placeholder: "List any related issues or pull requests. If there are no related issues or pull requests, just say 'None' or 'N/A'."
+    validations:
+      required: true
+  - type: input
+    id: related_pull_requests
+    attributes:
+      label: Related Pull Requests
+      description: List any related pull requests.
+      placeholder: "List any related pull requests. If there are no related pull requests, just say 'None' or 'N/A'."
+    validations:
+      required: true
