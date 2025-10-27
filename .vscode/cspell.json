@@ -1,0 +1,122 @@
+{
+    "version": "0.2",
+    "language": "en",
+    "words": [],
+    "allowCompoundWords": true,
+    "dictionaries": [
+        "typescript",
+        "docker",
+        "html",
+        "css",
+        "php",
+        "cpp",
+        "csharp",
+        "dotnet",
+        "bash",
+        "powershell",
+        "lua",
+        "dart",
+        "ruby",
+        "sql",
+        "aws",
+        "git",
+        "yaml",
+        "markdown",
+        "gaming-terms",
+        "game-developmnt",
+        "npm",
+        "node",
+        "go",
+        "python",
+        "en_US",
+        "en-gb",
+        "companies",
+        "softwareTerms",
+        "misc",
+        "filetypes",
+        "fonts",
+        "ms-custom",
+        "dart",
+        "flutter"
+    ],
+    "caseSensitive": false,
+    "enabled": true,
+    "ignorePaths": [
+        "node_modules",
+        "dist",
+        "build",
+        ".vscode",
+        ".git",
+        ".github",
+    ],
+    "enabledFileTypes": {
+        "markdown": true,
+        "javascript": true,
+        "typescript": true,
+        "vue": true,
+        "javascriptreact": true,
+        "typescriptreact": true,
+        "html": true,
+        "css": true,
+        "php": true,
+        "cpp": true,
+        "csharp": true,
+        "dotnet": true,
+        "bash": true,
+        "powershell": true,
+        "python": true,
+        "lua": true,
+        "dart": true,
+        "ruby": true,
+        "sql": true,
+        "aws": true,
+        "git": true,
+        "yaml": true,
+        "json": true,
+        "jsonc": true,
+        "json5": true
+    },
+    "maxNumberOfProblems": 1000,
+    "numSuggestions": 100,
+    "description": "The default cSpell settings file for the Monster Spawned Studios GitHub orginization.",
+    "useGitignore": true,
+    "minWordLength": 4,
+    "dictionaryDefinitions": [
+        {
+            "name": "ms-custom",
+            "description": "The custom dictionary for Monster Spawned Studios.",
+            "useCompounds": true,
+            "repMap": [
+                [
+                    "'|`|’",
+                    "'"
+                ],
+                [
+                    " ",
+                    ""
+                ],
+                [
+                    "\\",
+                    ""
+                ],
+                [
+                    "MSS",
+                    "Monster Spawned Studios"
+                ],
+                [
+                    "TMD",
+                    "TheModdersDen"
+                ]
+            ],
+            "path": "./dictionaries/mss-custom.txt"
+        }
+    ],
+    "reporters": [
+        [
+            "@cspell/cspell-json-reporter",
+            {
+                "outFile": "cspell-results.json"
+            }
+        ]
+    ]
+}
