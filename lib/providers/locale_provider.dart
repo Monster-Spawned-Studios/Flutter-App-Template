@@ -5,9 +5,15 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../services/logger_service.dart';
+
 class LocaleProvider extends ChangeNotifier {
   LocaleProvider() {
     _loadLocale();
+    // Logger will be initialized after main() completes
+    Future.microtask(
+      () => LoggerService.instance.info('LocaleProvider initialized'),
+    );
   }
   static const String _localeKey = 'selected_locale';
 
@@ -32,10 +38,14 @@ class LocaleProvider extends ChangeNotifier {
       _currentLocale = const Locale('en', 'US');
     }
     notifyListeners();
+    LoggerService.instance.debug('Locale loaded: $_currentLocale');
   }
 
   Future<void> setLocale(Locale locale) async {
     if (supportedLocales.contains(locale)) {
+      LoggerService.instance.info(
+        'Changing locale to: ${locale.languageCode}_${locale.countryCode}',
+      );
       _currentLocale = locale;
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(
@@ -43,6 +53,10 @@ class LocaleProvider extends ChangeNotifier {
         '${locale.languageCode}_${locale.countryCode}',
       );
       notifyListeners();
+    } else {
+      LoggerService.instance.warning(
+        'Attempted to set unsupported locale: $locale',
+      );
     }
   }
 

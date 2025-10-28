@@ -8,6 +8,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
+import '../services/logger_service.dart';
 import '../widgets/animated_card.dart';
 
 class LockScreen extends StatefulWidget {
@@ -91,7 +92,7 @@ class _LockScreenState extends State<LockScreen> {
                           ? Theme.of(context).colorScheme.primary
                           : Theme.of(
                               context,
-                            ).colorScheme.outline.withOpacity(0.3),
+                            ).colorScheme.outline.withValues(alpha: 0.3),
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -233,12 +234,19 @@ class _LockScreenState extends State<LockScreen> {
       if (number == '⌫') {
         if (_enteredPin.isNotEmpty) {
           _enteredPin = _enteredPin.substring(0, _enteredPin.length - 1);
+          LoggerService.instance.debug(
+            'PIN digit removed, length: ${_enteredPin.length}',
+          );
         }
       } else {
         if (_enteredPin.length < 4) {
           _enteredPin += number;
+          LoggerService.instance.debug(
+            'PIN digit entered, length: ${_enteredPin.length}',
+          );
 
           if (_enteredPin.length == 4) {
+            LoggerService.instance.info('PIN entry complete, authenticating');
             _authenticateWithPin();
           }
         }
@@ -257,8 +265,12 @@ class _LockScreenState extends State<LockScreen> {
     setState(() {
       _isLoading = false;
       if (success) {
+        LoggerService.instance.info(
+          'PIN authentication successful, navigating to home',
+        );
         Navigator.of(context).pushReplacementNamed('/home');
       } else {
+        LoggerService.instance.warning('PIN authentication failed');
         _showError = true;
         _enteredPin = '';
       }
@@ -266,6 +278,9 @@ class _LockScreenState extends State<LockScreen> {
   }
 
   Future<void> _authenticateWithBiometric() async {
+    LoggerService.instance.info(
+      'Attempting biometric authentication from lock screen',
+    );
     setState(() {
       _isLoading = true;
     });
@@ -276,8 +291,14 @@ class _LockScreenState extends State<LockScreen> {
     setState(() {
       _isLoading = false;
       if (success) {
+        LoggerService.instance.info(
+          'Biometric authentication successful from lock screen',
+        );
         Navigator.of(context).pushReplacementNamed('/home');
       } else {
+        LoggerService.instance.warning(
+          'Biometric authentication failed from lock screen',
+        );
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('biometric_failed'.tr()),

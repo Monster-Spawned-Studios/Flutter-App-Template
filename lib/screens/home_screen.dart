@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../providers/notification_provider.dart';
 import '../providers/theme_provider.dart';
+import '../services/logger_service.dart';
 import '../widgets/animated_card.dart';
 import '../widgets/language_selector.dart';
 import 'about_screen.dart';
@@ -39,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
         IconButton(
           icon: const Icon(Icons.lock),
           onPressed: () {
+            LoggerService.instance.info('Lock button pressed');
             Provider.of<AuthProvider>(context, listen: false).lockApp();
             Navigator.of(context).pushReplacementNamed('/lock');
           },
@@ -49,6 +51,9 @@ class _HomeScreenState extends State<HomeScreen> {
     bottomNavigationBar: BottomNavigationBar(
       currentIndex: _selectedIndex,
       onTap: (index) {
+        LoggerService.instance.info(
+          'Tab changed from $_selectedIndex to $index',
+        );
         setState(() {
           _selectedIndex = index;
         });
@@ -112,7 +117,7 @@ class _HomeTab extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Theme.of(
                       context,
-                    ).colorScheme.onSurface.withOpacity(0.7),
+                    ).colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
               ],
@@ -171,14 +176,16 @@ class _HomeTab extends StatelessWidget {
   );
 
   void _showLanguageDialog(BuildContext context) {
-    showDialog(
+    LoggerService.instance.info('Showing language selector dialog');
+    showDialog<void>(
       context: context,
       builder: (context) => const LanguageSelector(),
     );
   }
 
   void _showThemeDialog(BuildContext context) {
-    showDialog(
+    LoggerService.instance.info('Showing theme selector dialog');
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('theme'.tr()),
@@ -233,10 +240,12 @@ class _HomeTab extends StatelessWidget {
   }
 
   Future<void> _testBiometric(BuildContext context) async {
+    LoggerService.instance.info('Testing biometric from home screen');
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final isAvailable = await authProvider.isBiometricAvailable();
 
     if (!isAvailable) {
+      LoggerService.instance.warning('Biometric test failed - not available');
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('biometric_not_available'.tr())));
@@ -244,6 +253,7 @@ class _HomeTab extends StatelessWidget {
     }
 
     final success = await authProvider.authenticateWithBiometric();
+    LoggerService.instance.info('Biometric test result: $success');
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -255,6 +265,7 @@ class _HomeTab extends StatelessWidget {
   }
 
   void _testNotification(BuildContext context) {
+    LoggerService.instance.info('Testing notification from home screen');
     Provider.of<NotificationProvider>(
       context,
       listen: false,
@@ -299,7 +310,9 @@ class _FeatureCard extends StatelessWidget {
           Text(
             subtitle,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              color: Theme.of(
+                context,
+              ).colorScheme.onSurface.withValues(alpha: 0.6),
             ),
             textAlign: TextAlign.center,
           ),

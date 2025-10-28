@@ -5,9 +5,15 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../services/logger_service.dart';
+
 class ThemeProvider extends ChangeNotifier {
   ThemeProvider() {
     _loadTheme();
+    // Logger will be initialized after main() completes
+    Future.microtask(
+      () => LoggerService.instance.info('ThemeProvider initialized'),
+    );
   }
   static const String _themeKey = 'theme_mode';
 
@@ -59,9 +65,11 @@ class ThemeProvider extends ChangeNotifier {
     final themeIndex = prefs.getInt(_themeKey) ?? 0;
     _themeMode = ThemeMode.values[themeIndex];
     notifyListeners();
+    LoggerService.instance.debug('Theme loaded: $_themeMode');
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
+    LoggerService.instance.info('Changing theme mode to: $mode');
     _themeMode = mode;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_themeKey, mode.index);

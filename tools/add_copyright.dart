@@ -17,8 +17,8 @@ void main(List<String> args) {
   final directories = ['lib', 'test', 'integration_test', 'android', 'ios', 'web', 'windows', 'macos', 'linux'];
   final extensions = ['.dart', '.yaml', '.yml', '.gradle', '.swift', '.kt', '.java'];
 
-  int filesProcessed = 0;
-  int filesSkipped = 0;
+  var filesProcessed = 0;
+  var filesSkipped = 0;
 
   for (final directory in directories) {
     final dir = Directory(directory);
@@ -34,12 +34,12 @@ void main(List<String> args) {
 
 void _processDirectory(Directory dir, List<String> extensions, String copyrightHeader, int filesProcessed, int filesSkipped) {
   final entities = dir.listSync(recursive: true);
-  
+
   for (final entity in entities) {
     if (entity is File) {
       final filePath = entity.path;
       final extension = _getFileExtension(filePath);
-      
+
       if (extensions.contains(extension)) {
         if (_addCopyrightHeader(entity, copyrightHeader, extension)) {
           filesProcessed++;
@@ -60,7 +60,7 @@ String _getFileExtension(String filePath) {
 bool _addCopyrightHeader(File file, String copyrightHeader, String extension) {
   try {
     final content = file.readAsStringSync();
-    
+
     // Skip if file already has copyright header
     if (content.contains('Copyright ©') && content.contains('Monster Spawned Studios')) {
       return false;

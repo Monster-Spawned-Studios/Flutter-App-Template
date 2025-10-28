@@ -14,12 +14,20 @@ import 'providers/theme_provider.dart';
 import 'screens/home_screen.dart';
 import 'screens/lock_screen.dart';
 import 'screens/splash_screen.dart';
+import 'services/logger_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Logger Service
+  await LoggerService.instance.initialize();
+  LoggerService.instance.info('App initialization started');
+
   // Initialize EasyLocalization
   await EasyLocalization.ensureInitialized();
+  LoggerService.instance.info('EasyLocalization initialized');
+
+  LoggerService.instance.info('Starting FlutterTemplateApp');
 
   runApp(
     EasyLocalization(
@@ -40,39 +48,42 @@ class FlutterTemplateApp extends StatelessWidget {
   const FlutterTemplateApp({super.key});
 
   @override
-  Widget build(BuildContext context) => MultiProvider(
-    providers: [
-      ChangeNotifierProvider(create: (_) => ThemeProvider()),
-      ChangeNotifierProvider(create: (_) => LocaleProvider()),
-      ChangeNotifierProvider(create: (_) => AuthProvider()),
-      ChangeNotifierProvider(create: (_) => NotificationProvider()),
-    ],
-    child: Consumer<ThemeProvider>(
-      builder: (context, themeProvider, _) => MaterialApp(
-        title: 'app_title'.tr(),
-        debugShowCheckedModeBanner: false,
+  Widget build(BuildContext context) {
+    LoggerService.instance.debug('Creating provider tree');
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, _) => MaterialApp(
+          title: 'app_title'.tr(),
+          debugShowCheckedModeBanner: false,
 
-        // Localization
-        localizationsDelegates: context.localizationDelegates,
-        supportedLocales: context.supportedLocales,
-        locale: context.locale,
+          // Localization
+          localizationsDelegates: context.localizationDelegates,
+          supportedLocales: context.supportedLocales,
+          locale: context.locale,
 
-        // Theme
-        theme: themeProvider.lightTheme,
-        darkTheme: themeProvider.darkTheme,
-        themeMode: themeProvider.themeMode,
+          // Theme
+          theme: themeProvider.lightTheme,
+          darkTheme: themeProvider.darkTheme,
+          themeMode: themeProvider.themeMode,
 
-        // Routes
-        home: const SplashScreen(),
-        routes: {
-          '/home': (context) => const HomeScreen(),
-          '/lock': (context) => const LockScreen(),
-        },
+          // Routes
+          home: const SplashScreen(),
+          routes: {
+            '/home': (context) => const HomeScreen(),
+            '/lock': (context) => const LockScreen(),
+          },
 
-        // Animations
-        builder: (context, child) =>
-            child?.animate().fadeIn(duration: 300.ms) ?? child!,
+          // Animations
+          builder: (context, child) =>
+              child?.animate().fadeIn(duration: 300.ms) ?? child!,
+        ),
       ),
-    ),
-  );
+    );
+  }
 }

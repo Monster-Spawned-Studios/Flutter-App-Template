@@ -7,9 +7,15 @@ import 'package:local_auth/local_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../services/logger_service.dart';
+
 class AuthProvider extends ChangeNotifier {
   AuthProvider() {
     _loadAuthSettings();
+    // Logger will be initialized after main() completes
+    Future.microtask(
+      () => LoggerService.instance.info('AuthProvider initialized'),
+    );
   }
   static const String _isLockedKey = 'is_locked';
   static const String _pinKey = 'user_pin';
@@ -31,6 +37,9 @@ class AuthProvider extends ChangeNotifier {
     _isBiometricEnabled = prefs.getBool(_biometricEnabledKey) ?? false;
     _userPin = prefs.getString(_pinKey) ?? '';
     notifyListeners();
+    LoggerService.instance.debug(
+      'Auth settings loaded - locked: $_isLocked, biometric: $_isBiometricEnabled',
+    );
   }
 
   Future<bool> isBiometricAvailable() async {
@@ -53,8 +62,12 @@ class AuthProvider extends ChangeNotifier {
 
   Future<bool> authenticateWithBiometric() async {
     try {
+      LoggerService.instance.info('Biometric authentication attempted');
       final isAvailable = await isBiometricAvailable();
-      if (!isAvailable) return false;
+      if (!isAvailable) {
+        LoggerService.instance.warning('Biometric not available');
+        return false;
+      }
 
       final result = await _localAuth.authenticate(
         localizedReason: 'Unlock App',
@@ -65,20 +78,26 @@ class AuthProvider extends ChangeNotifier {
       );
 
       if (result) {
+        LoggerService.instance.info('Biometric authentication successful');
         await unlockApp();
+      } else {
+        LoggerService.instance.warning('Biometric authentication failed');
       }
 
       return result;
     } catch (e) {
+      LoggerService.instance.error('Biometric authentication error', error: e);
       return false;
     }
   }
 
   Future<bool> authenticateWithPin(String pin) async {
     if (pin == _userPin) {
+      LoggerService.instance.info('PIN authentication successful');
       await unlockApp();
       return true;
     }
+    LoggerService.instance.warning('PIN authentication failed - incorrect PIN');
     return false;
   }
 
@@ -105,6 +124,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> lockApp() async {
+    LoggerService.instance.info('App locked');
     _isLocked = true;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_isLockedKey, true);
@@ -112,6 +132,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> unlockApp() async {
+    LoggerService.instance.info('App unlocked');
     _isLocked = false;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_isLockedKey, false);

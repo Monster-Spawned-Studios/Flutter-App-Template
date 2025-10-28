@@ -7,9 +7,14 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/timezone.dart' as tz;
 
+import '../services/logger_service.dart';
+
 class NotificationProvider extends ChangeNotifier {
   NotificationProvider() {
     _initializeNotifications();
+    Future.microtask(
+      () => LoggerService.instance.info('NotificationProvider initialized'),
+    );
   }
   final FlutterLocalNotificationsPlugin _notifications =
       FlutterLocalNotificationsPlugin();
@@ -39,21 +44,33 @@ class NotificationProvider extends ChangeNotifier {
     _isInitialized = true;
     await _requestPermission();
     notifyListeners();
+    LoggerService.instance.debug(
+      'Notifications initialized - permission: $_isPermissionGranted',
+    );
   }
 
   Future<void> _requestPermission() async {
     final permission = await Permission.notification.request();
     _isPermissionGranted = permission.isGranted;
     notifyListeners();
+    LoggerService.instance.debug(
+      'Notification permission: $_isPermissionGranted',
+    );
   }
 
   void _onNotificationTapped(NotificationResponse response) {
     // Handle notification tap
-    debugPrint('Notification tapped: ${response.payload}');
+    LoggerService.instance.info('Notification tapped: ${response.payload}');
   }
 
   Future<void> showHelloWorldNotification() async {
-    if (!_isInitialized || !_isPermissionGranted) return;
+    LoggerService.instance.info('Showing hello world notification');
+    if (!_isInitialized || !_isPermissionGranted) {
+      LoggerService.instance.warning(
+        'Notification not shown - initialized: $_isInitialized, granted: $_isPermissionGranted',
+      );
+      return;
+    }
 
     const androidDetails = AndroidNotificationDetails(
       'hello_world_channel',
@@ -81,6 +98,7 @@ class NotificationProvider extends ChangeNotifier {
       details,
       payload: 'hello_world',
     );
+    LoggerService.instance.debug('Hello world notification sent');
   }
 
   Future<void> scheduleNotification({
@@ -89,6 +107,9 @@ class NotificationProvider extends ChangeNotifier {
     required String body,
     required DateTime scheduledDate,
   }) async {
+    LoggerService.instance.info(
+      'Scheduling notification: $title at $scheduledDate',
+    );
     if (!_isInitialized || !_isPermissionGranted) return;
 
     const androidDetails = AndroidNotificationDetails(
@@ -121,13 +142,16 @@ class NotificationProvider extends ChangeNotifier {
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.dateAndTime,
     );
+    LoggerService.instance.debug('Notification scheduled with id: $id');
   }
 
   Future<void> cancelNotification(int id) async {
+    LoggerService.instance.debug('Cancelling notification with id: $id');
     await _notifications.cancel(id);
   }
 
   Future<void> cancelAllNotifications() async {
+    LoggerService.instance.info('Cancelling all notifications');
     await _notifications.cancelAll();
   }
 }

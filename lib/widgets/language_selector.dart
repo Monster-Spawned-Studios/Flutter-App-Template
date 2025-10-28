@@ -53,12 +53,11 @@ class LanguageSelector extends StatelessWidget {
                   locale.languageCode.toUpperCase(),
                   style: TextStyle(
                     color: isSelected
-                        ? Theme.of(
-                            context,
-                          ).colorScheme.onPrimaryContainer.withOpacity(0.7)
+                        ? Theme.of(context).colorScheme.onPrimaryContainer
+                              .withValues(alpha: 0.7)
                         : Theme.of(
                             context,
-                          ).colorScheme.onSurface.withOpacity(0.7),
+                          ).colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
                 trailing: isSelected

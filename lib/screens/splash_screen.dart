@@ -8,6 +8,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/auth_provider.dart';
+import '../services/logger_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -24,15 +25,18 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateToNextScreen() async {
-    await Future.delayed(const Duration(seconds: 2));
+    LoggerService.instance.info('Splash screen showing, waiting 2 seconds');
+    await Future<void>.delayed(const Duration(seconds: 2));
 
     if (!mounted) return;
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     if (authProvider.isLocked) {
+      LoggerService.instance.info('Navigating to lock screen');
       Navigator.of(context).pushReplacementNamed('/lock');
     } else {
+      LoggerService.instance.info('Navigating to home screen');
       Navigator.of(context).pushReplacementNamed('/home');
     }
   }
@@ -53,7 +57,7 @@ class _SplashScreenState extends State<SplashScreen> {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
@@ -89,7 +93,7 @@ class _SplashScreenState extends State<SplashScreen> {
           Text(
                 'welcome'.tr(),
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.white.withOpacity(0.8),
+                  color: Colors.white.withValues(alpha: 0.8),
                 ),
               )
               .animate(delay: 600.ms)

@@ -11,6 +11,7 @@ import '../providers/auth_provider.dart';
 import '../providers/locale_provider.dart';
 import '../providers/notification_provider.dart';
 import '../providers/theme_provider.dart';
+import '../services/logger_service.dart';
 import '../widgets/animated_card.dart';
 import '../widgets/language_selector.dart';
 
@@ -152,14 +153,18 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _showLanguageDialog(BuildContext context) {
-    showDialog(
+    LoggerService.instance.info(
+      'Showing language selector dialog from settings',
+    );
+    showDialog<void>(
       context: context,
       builder: (context) => const LanguageSelector(),
     );
   }
 
   void _showThemeDialog(BuildContext context) {
-    showDialog(
+    LoggerService.instance.info('Showing theme selector dialog from settings');
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('theme'.tr()),
@@ -217,6 +222,9 @@ class SettingsScreen extends StatelessWidget {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     try {
       await authProvider.enableBiometric(value);
+      LoggerService.instance.info(
+        'Biometric ${value ? 'enabled' : 'disabled'}',
+      );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -226,6 +234,7 @@ class SettingsScreen extends StatelessWidget {
         );
       }
     } on Exception catch (e) {
+      LoggerService.instance.error('Failed to toggle biometric', error: e);
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
@@ -235,6 +244,9 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _toggleNotifications(BuildContext context, bool value) {
+    LoggerService.instance.info(
+      'Notifications ${value ? 'enabled' : 'disabled'}',
+    );
     // This would typically request notification permission
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -247,7 +259,8 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _showLockSetupDialog(BuildContext context) {
-    showDialog(
+    LoggerService.instance.info('Showing lock screen setup dialog');
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('lock_screen'.tr()),
@@ -263,7 +276,8 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _showClearDataDialog(BuildContext context) {
-    showDialog(
+    LoggerService.instance.warning('Showing clear data confirmation dialog');
+    showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Clear All Data'),
@@ -288,9 +302,11 @@ class SettingsScreen extends StatelessWidget {
   }
 
   Future<void> _clearAllData(BuildContext context) async {
+    LoggerService.instance.warning('Clearing all application data');
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     await authProvider.clearAuth();
 
+    LoggerService.instance.info('All data cleared successfully');
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('All data cleared'),
