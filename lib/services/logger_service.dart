@@ -5,6 +5,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
@@ -26,18 +27,23 @@ class LoggerService {
   /// Initialize the logger service
   Future<void> initialize() async {
     if (_isInitialized) return;
-
     try {
       await _loadConfiguration();
       _setupLogger();
       _isInitialized = true;
-    } catch (e) {
+      LoggerService.instance.info(
+        'Logger service initialized with remote configuration settings: $_isDebugMode, $_enableFileLogging',
+      );
+    } on Exception catch (e) {
       debugPrint('Failed to initialize logger: $e');
       // Initialize with default settings on failure
       _isDebugMode = AppConfig.defaultDebugMode;
       _enableFileLogging = AppConfig.defaultEnableFileLogging;
       _setupLogger();
       _isInitialized = true;
+      LoggerService.instance.info(
+        'Logger service initialized with environment variables settings: $_isDebugMode, $_enableFileLogging',
+      );
     }
   }
 
@@ -68,7 +74,7 @@ class LoggerService {
           _isDebugMode = true;
           _enableFileLogging = false;
         }
-      } catch (e) {
+      } on Exception catch (e) {
         debugPrint('Failed to fetch remote config: $e');
         // Fallback to debug mode on network error
         _isDebugMode = true;
@@ -137,10 +143,38 @@ class FileOutput extends LogOutput {
   final String _logFilePath;
   final int _maxFileSizeBytes;
 
+  // File output not implemented yet
+  // Would write logs to file at _logFilePath
+  // Respects _maxFileSizeBytes and log rotation
   @override
   void output(OutputEvent event) {
-    // File output not implemented yet
-    // Would write logs to file at _logFilePath
-    // Respects _maxFileSizeBytes and log rotation
+    LoggerService.instance.debug('Logging to file: $_logFilePath');
+    LoggerService.instance.debug('Max file size: $_maxFileSizeBytes');
+
+    // Initialize the log file
+    final logFile = File(_logFilePath);
+    if (!logFile.existsSync()) {
+      logFile.createSync();
+    }
+
+    // Write the log message to the file
+    final formattedDate = DateFormat(
+      AppConfig.dateFormat,
+    ).format(DateTime.now());
+    final logLine = event.lines.join('\n');
+    logFile.writeAsStringSync(
+      '$formattedDate: $logLine\n',
+      mode: FileMode.append,
+    );
+
+    // Rotate the log file if it exceeds the max file size
+    if (logFile.lengthSync() > _maxFileSizeBytes) {
+      logFile.renameSync(
+        '${logFile.path}.${DateTime.now().millisecondsSinceEpoch}',
+      );
+    }
+
+    // Log the message
+    LoggerService.instance.debug('Logged to file: $_logFilePath');
   }
 }

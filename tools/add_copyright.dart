@@ -17,8 +17,8 @@ void main(List<String> args) {
   final directories = ['lib', 'test', 'integration_test', 'android', 'ios', 'web', 'windows', 'macos', 'linux'];
   final extensions = ['.dart', '.yaml', '.yml', '.gradle', '.swift', '.kt', '.java'];
 
-  var filesProcessed = 0;
-  var filesSkipped = 0;
+  final filesProcessed = 0;
+  final filesSkipped = 0;
 
   for (final directory in directories) {
     final dir = Directory(directory);
