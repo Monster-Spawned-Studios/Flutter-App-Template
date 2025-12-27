@@ -14,25 +14,55 @@ void main(List<String> args) {
   final copyrightContent = copyrightFile.readAsStringSync();
   final copyrightHeader = _formatCopyrightHeader(copyrightContent);
 
-  final directories = ['lib', 'test', 'integration_test', 'android', 'ios', 'web', 'windows', 'macos', 'linux'];
-  final extensions = ['.dart', '.yaml', '.yml', '.gradle', '.swift', '.kt', '.java'];
+  final directories = [
+    'lib',
+    'test',
+    'integration_test',
+    'android',
+    'ios',
+    'web',
+    'windows',
+    'macos',
+    'linux',
+  ];
+  final extensions = [
+    '.dart',
+    '.yaml',
+    '.yml',
+    '.gradle',
+    '.swift',
+    '.kt',
+    '.java',
+  ];
 
-  final filesProcessed = 0;
-  final filesSkipped = 0;
+  const totalFilesProcessed = 0;
+  const totalFilesSkipped = 0;
 
   for (final directory in directories) {
     final dir = Directory(directory);
     if (dir.existsSync()) {
-      _processDirectory(dir, extensions, copyrightHeader, filesProcessed, filesSkipped);
+      _processDirectory(
+        dir,
+        extensions,
+        copyrightHeader,
+        totalFilesProcessed,
+        totalFilesSkipped,
+      );
     }
   }
 
   print('Copyright header processing complete:');
-  print('Files processed: $filesProcessed');
-  print('Files skipped: $filesSkipped');
+  print('Files processed: $totalFilesProcessed');
+  print('Files skipped: $totalFilesSkipped');
 }
 
-void _processDirectory(Directory dir, List<String> extensions, String copyrightHeader, int filesProcessed, int filesSkipped) {
+void _processDirectory(
+  Directory dir,
+  List<String> extensions,
+  String copyrightHeader,
+  int filesProcessed,
+  int filesSkipped,
+) {
   final entities = dir.listSync(recursive: true);
 
   for (final entity in entities) {
@@ -53,7 +83,9 @@ void _processDirectory(Directory dir, List<String> extensions, String copyrightH
 
 String _getFileExtension(String filePath) {
   final lastDot = filePath.lastIndexOf('.');
-  if (lastDot == -1) return '';
+  if (lastDot == -1) {
+    return '';
+  }
   return filePath.substring(lastDot);
 }
 
@@ -62,7 +94,8 @@ bool _addCopyrightHeader(File file, String copyrightHeader, String extension) {
     final content = file.readAsStringSync();
 
     // Skip if file already has copyright header
-    if (content.contains('Copyright ©') && content.contains('Monster Spawned Studios')) {
+    if (content.contains('Copyright ©') &&
+        content.contains('Monster Spawned Studios')) {
       return false;
     }
 
@@ -90,7 +123,7 @@ bool _addCopyrightHeader(File file, String copyrightHeader, String extension) {
     file.writeAsStringSync(newContent);
     print('Added copyright header to: ${file.path}');
     return true;
-  } catch (e) {
+  } on Exception catch (e) {
     print('Error processing ${file.path}: $e');
     return false;
   }
@@ -98,7 +131,10 @@ bool _addCopyrightHeader(File file, String copyrightHeader, String extension) {
 
 String _formatCopyrightHeader(String copyrightContent) {
   final lines = copyrightContent.split('\n');
-  return lines.map((line) => line.trim()).where((line) => line.isNotEmpty).join('\n');
+  return lines
+      .map((line) => line.trim())
+      .where((line) => line.isNotEmpty)
+      .join('\n');
 }
 
 String _addDartCopyright(String content, String copyright) {
