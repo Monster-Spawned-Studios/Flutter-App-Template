@@ -1,122 +1,111 @@
 {
-    "version": "0.2",
-    "language": "en",
-    "words": [],
-    "allowCompoundWords": true,
-    "dictionaries": [
-        "typescript",
-        "docker",
-        "html",
-        "css",
-        "php",
-        "cpp",
-        "csharp",
-        "dotnet",
-        "bash",
-        "powershell",
-        "lua",
-        "dart",
-        "ruby",
-        "sql",
-        "aws",
-        "git",
-        "yaml",
-        "markdown",
-        "gaming-terms",
-        "game-developmnt",
-        "npm",
-        "node",
-        "go",
-        "python",
-        "en_US",
-        "en-gb",
-        "companies",
-        "softwareTerms",
-        "misc",
-        "filetypes",
-        "fonts",
-        "ms-custom",
-        "dart",
-        "flutter"
-    ],
-    "caseSensitive": false,
-    "enabled": true,
-    "ignorePaths": [
-        "node_modules",
-        "dist",
-        "build",
-        ".vscode",
-        ".git",
-        ".github",
-    ],
-    "enabledFileTypes": {
-        "markdown": true,
-        "javascript": true,
-        "typescript": true,
-        "vue": true,
-        "javascriptreact": true,
-        "typescriptreact": true,
-        "html": true,
-        "css": true,
-        "php": true,
-        "cpp": true,
-        "csharp": true,
-        "dotnet": true,
-        "bash": true,
-        "powershell": true,
-        "python": true,
-        "lua": true,
-        "dart": true,
-        "ruby": true,
-        "sql": true,
-        "aws": true,
-        "git": true,
-        "yaml": true,
-        "json": true,
-        "jsonc": true,
-        "json5": true
-    },
-    "maxNumberOfProblems": 1000,
-    "numSuggestions": 100,
-    "description": "The default cSpell settings file for the Monster Spawned Studios GitHub orginization.",
-    "useGitignore": true,
-    "minWordLength": 4,
-    "dictionaryDefinitions": [
-        {
-            "name": "ms-custom",
-            "description": "The custom dictionary for Monster Spawned Studios.",
-            "useCompounds": true,
-            "repMap": [
-                [
-                    "'|`|’",
-                    "'"
-                ],
-                [
-                    " ",
-                    ""
-                ],
-                [
-                    "\\",
-                    ""
-                ],
-                [
-                    "MSS",
-                    "Monster Spawned Studios"
-                ],
-                [
-                    "TMD",
-                    "TheModdersDen"
-                ]
-            ],
-            "path": "./dictionaries/mss-custom.txt"
-        }
-    ],
-    "reporters": [
+  "version": "0.2",
+  "allowCompoundWords": true,
+  "caseSensitive": false,
+  "dictionaries": [
+    "en_US",
+    "en-gb",
+    "companies",
+    "softwareTerms",
+    "misc",
+    "typescript",
+    "node",
+    "npm",
+    "html",
+    "csharp",
+    "bash",
+    "python",
+    "powershell",
+    "filetypes",
+    "Monster Spawned Studios Custom Dictionary",
+    "Minecraft Dictionary",
+    "Other Game Dictionary"
+  ],
+  "ignorePaths": [
+    "node_modules",
+    "dist",
+    "public",
+    ".github",
+    ".astro",
+    ".vscode",
+    ".prettierrc",
+    ".prettierignore",
+    ".eslintrc",
+    ".eslintrc-ignore",
+    ".gitignore",
+    ".gitattributes",
+    ".git"
+  ],
+  "enabled": true,
+  "description": "Custom spell checking for the Monster Spawned Studios blog",
+  "ignoreWords": [
+    ""
+  ],
+  "dictionaryDefinitions": [
+    {
+      "name": "Monster Spawned Studios Custom Dictionary",
+      "path": "./dictionaries/mss-custom-dictionary.txt",
+      "description": "Custom dictionary for Monster Spawned Studios' commonly used words.",
+      "repMap": [
         [
-            "@cspell/cspell-json-reporter",
-            {
-                "outFile": "cspell-results.json"
-            }
+          "'|`|’",
+          "'"
         ]
-    ]
+      ]
+    },
+    {
+      "name": "Minecraft Dictionary",
+      "path": "./dictionaries/minecraft-words.txt",
+      "description": "Custom dictionary for commonly used words regarding the game 'Minecraft'.",
+      "repMap": [
+        [
+          "'|`|’",
+          "'"
+        ]
+      ]
+    },
+    {
+      "name": "Other Game Dictionary",
+      "path": "./dictionaries/other-game-words.txt",
+      "description": "Custom dictionary for commonly used words regarding other games that the Monster Spawned Studios blog may use.",
+      "repMap": [
+        [
+          "'|`|’",
+          "'"
+        ]
+      ]
+    }
+  ],
+  "minWordLength": 5,
+  "maxDuplicateProblems": 3,
+  "useGitignore": true,
+  "enabledFileTypes": {
+    "*": true,
+    "md": true,
+    "astro": true,
+    "json": true,
+    "json5": true,
+    "jsonc": true,
+    "yaml": true,
+    "yml": true,
+    "html": true,
+    "scss": true,
+    "css": true,
+    "js": true,
+    "mjs": true,
+    "jsx": true,
+    "ts": true,
+    "tsx": true,
+    "txt": false,
+    "log": false,
+    "py": false,
+    "sh": true,
+    "svg": false,
+    "dart": true,
+    "kt": true,
+    "java": true,
+    "swift": true,
+    "lock": false,
+    "gradle": false
+  }
 }
